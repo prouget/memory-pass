@@ -3,24 +3,24 @@ import sqlite3
 
 from PyQt5 import QtWidgets, uic, QtGui
 from PyQt5.QtWidgets import QMessageBox
-
-from generator import pw_gen, pw_gen_num
-
 from drop import TransferData
+
+import Const
+from generator import pw_gen, pw_gen_num
 
 
 app = QtWidgets.QApplication([])
-w = uic.loadUi("pass.ui")
 splash = uic.loadUi("splash.ui")
+w = uic.loadUi("pass.ui")
 
 database = "pass.pdf"
+
 
 # ----- SPLASH -----
 
 def connect():
-    pw = 'test'
     p = splash.lineEdit_Con.text()
-    if p == pw:
+    if p == Const.MASTER_PASSWORD:
         splash.close()
         w.show()
     else:
@@ -31,7 +31,7 @@ def connect():
         msg.setWindowTitle("Erreur")
         msg.exec_()
 
-# ------------------
+# ----- DATA -----
 
 def clearData():
     while (w.tableWidget.rowCount()>0):
@@ -123,11 +123,11 @@ def validPass():
 # ----- SYNCHRO -----
 def uploadDrop():
     w.label_save.setText('-')
-    access_token = 's_5yuTbKn0AAAAAAAAAAWi51bnBlfTpw7n5T-ZVyP2InYuP_kqBrWMGX55OmZJnH'
+    access_token = Const.ACCESS
     transferData = TransferData(access_token)
 
-    file_from = 'pass.pdf'
-    file_to = '/API/pass.pdf'  # The full path to upload the file to, including the file name
+    file_from = Const.FILE_FROM
+    file_to = Const.FILE_TO  # The full path to upload the file to, including the file name
 
     # API DROPBOX v2
     transferData.upload_file(file_from, file_to)
@@ -136,7 +136,7 @@ def uploadDrop():
 
 def downloadDrop():
     w.label_get.setText('-') 
-    access_token = 's_5yuTbKn0AAAAAAAAAAWi51bnBlfTpw7n5T-ZVyP2InYuP_kqBrWMGX55OmZJnH'
+    access_token = Const.ACCESS
     transferData = TransferData(access_token)
 
     # API DROPBOX v2
@@ -160,6 +160,7 @@ w.pushButton_Generate.clicked.connect(passW)
 w.pushButton_Validate.clicked.connect(validPass)
 
 splash.pushButton_Con.clicked.connect(connect)
+splash.lineEdit_Con.returnPressed.connect(connect)
 
 dataConnect()
 splash.show()
